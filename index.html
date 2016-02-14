@@ -1,9 +1,107 @@
-<html>
-  <head>
-    <title>Todo Application</title>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.14/angular.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
-  </head>
-  <body>
-  </body>
+<html ng-app>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js"></script>
+	<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css">
+	<script src="script.js"></script>
+</head>
+
+<body style="background-color:#F5F5F5">
+    <div class="container col-md-14">
+        <div style="font-size:1000%" class="text-center">//TODO:</div>
+    </div>
+    <br/>
+  	<div class="container" ng-controller="TodoCtrl">
+    		<div class="col-sm-7">
+    			<h2>Add an Item:</h2>
+		    	<form>
+			        <div class="form-group row">
+                        Title
+			        	<input type="text" class="form-control" placeholder="To Do Item" ng-model="formTodoTitle" ng-model-instant/>
+			        </div>
+			        <div class="form-group row">
+                        Description
+			        	<textarea class="form-control" ng-model="formTodoText" placeholder="Description" ng-model-instant rows="3"></textarea>
+			        </div>
+			        <div class="form-group row">
+                        Due Date
+			         	<input input="text" class="form-control" placeholder="(mm/dd/yy)" ng-model="formTodoDue" ng-model-instant/>
+			        </div>
+			        <div class="form-group row">
+			        	<button class="btn btn-primary" ng-click="addTodo()">Add</button>
+			        </div>
+	      		</form>
+	  		</div>
+            <div class="row">
+    			<div class="col-sm-5">
+        			<h2>You have <span class="normal">{{getTotalTodos()}}</span> left to do:</h2>
+                    <br>
+    		    	<ul class="list-group">
+    		    		<li class="list-group-item diabled">
+    		    			<input class="form-control" ng-model="query" type="text" placeholder="Sort by" autofocus>
+    		    		</li>
+    	        		<li class="list-group-item" ng-repeat="list in todos | filter:query | orderBy: 'duedate' ">
+    	        			<button type="button" class="close" ng-click="deleteTodo(todos.indexOf(list))"><span aria-hidden="true">&times;</span></button>
+    	          			<input type="checkbox" ng-model="list.done"/>
+    	          			<div class="task done-{{list.done}}" style="padding-left:30px">
+    	          				<h5 class="list-group-item-heading">{{list.title}} </h5>
+                                <h6 class="normal">due by {{list.duedate}}</h6>
+    	          				<p class="list-group-item-text">{{list.text}}</p>
+    	          			</div>
+    	        		</li>
+    		    	</ul>
+        		</div>
+	    </div>
+	</div>
+</body>
+
+<script>
+    function TodoCtrl($scope) {
+
+    $scope.todos = [
+        {title:'CSE 3345 Assignment 4', text:'To Do List using AngularJS', duedate:'2/12/16', done:false}
+    ];
+
+    $scope.getTotalTodos = function () {
+        if($scope.todos.length == 1){
+            return $scope.todos.length + " thing";
+        } else {
+            return $scope.todos.length + " things";
+        }
+    };
+
+    $scope.addTodo = function () {
+        if($scope.checkForm()) {
+            $scope.todos.push({title:$scope.formTodoTitle, text:$scope.formTodoText, duedate:$scope.formTodoDue, done:false});
+            $scope.formTodoTitle = '';
+            $scope.formTodoText = '';
+            $scope.formTodoDue = '';
+        }
+    };
+
+    $scope.deleteTodo = function (index) {
+        $scope.todos.splice(index, 1);
+    };
+
+    $scope.filterFunction = function(element) {
+        return element.name.match(/^Ma/) ? true : false;
+    };
+
+    $scope.checkForm = function() {
+        re = /^\d{1,2}\/\d{1,2}\/\d{2,4}$/;
+        if($scope.formTodoTitle == undefined && $scope.formTodoText == undefined) {
+            window.alert("Title and/or description fields left empty");
+            return false;
+        }
+        else if($scope.formTodoDue == undefined) {
+            window.alert("Due Date left empty");
+            return false;
+        }
+        else if(!$scope.formTodoDue.match(re)) {
+            window.alert("Invalid date format (dd/mm/yy)");
+            return false;
+        }
+        return true;
+    };
+    }
+</script>
 </html>
